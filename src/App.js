@@ -1,10 +1,20 @@
 import React from "react";
+import "./style.css";
 import { useState } from "react";
 function App() {
   const [localData, setLocalData] = useState(
     JSON.parse(localStorage.getItem("data")) || []
   );
+  let [page, setPage] = useState(true)
 
+  let handleFunc = () => {
+    setPage(!page)
+    setInputData({
+      ism: "",
+      fam: "",
+      tel: "",
+    });
+  }
   const [qiymat, setQiymat] = useState("");
 
   const [inputData, setInputData] = useState({
@@ -28,13 +38,14 @@ function App() {
       fam: elem.fam,
       tel: elem.tel,
     });
+    setPage(!page)
   };
 
   // malumot ochirish
   let ochir = (item) => {
     localStorage.setItem(
       "data",
-      JSON.stringify(localData.filter((val) => val !== item))
+      JSON.stringify(localData.filter((val) => val.id !== item.id))
     );
     setLocalData(JSON.parse(localStorage.getItem("data")));
   };
@@ -48,12 +59,12 @@ function App() {
           "data",
           JSON.stringify([
             ...JSON.parse(localStorage.getItem("data")),
-            inputData,
+            {...inputData, id:new Date().getTime().toString()},
           ])
         );
         setLocalData(JSON.parse(localStorage.getItem("data")));
       } else {
-        localStorage.setItem("data", JSON.stringify([inputData]));
+        localStorage.setItem("data", JSON.stringify([{...inputData, id:new Date().getTime().toString()}]));
         setLocalData(JSON.parse(localStorage.getItem("data")));
       }
       setInputData({
@@ -61,6 +72,7 @@ function App() {
         fam: "",
         tel: "",
       });
+      handleFunc()
     } else {
       console.log("tahrirlandi");
       setQiymat("");
@@ -68,7 +80,7 @@ function App() {
         "data",
         JSON.stringify([
           ...localData.slice(0, qiymat),
-          inputData,
+          {...inputData, id:new Date().getTime().toString()},
           ...localData.slice(qiymat + 1, localData.length),
         ])
       );
@@ -78,82 +90,104 @@ function App() {
         fam: "",
         tel: "",
       });
+      handleFunc()
     }
   };
 
+
   return (
     <div className="App">
-      <form
-        style={{ display: "flex", flexDirection: "column", width: "300px" }}
-        onSubmit={dataSend}
-      >
-        <input
-          type="text"
-          name="ism"
-          value={inputData.ism}
-          onInput={changeFunc}
-        />
-        <input
-          type="text"
-          name="fam"
-          value={inputData.fam}
-          onInput={changeFunc}
-        />
-        <input
-          type="text"
-          name="tel"
-          value={inputData.tel}
-          onInput={changeFunc}
-        />
-        <button> jonat </button>
-      </form>
-
-      <table border={1} style={{ width: "500px", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>ism</th>
-            <th>fam</th>
-            <th>tel</th>
-          </tr>
-        </thead>
-        <tbody>
-          {localData.length > 0 ? (
-            localData.map((item, i) => (
-              <tr key={i}>
-                <th>{i + 1}</th>
-                <td>{item.ism}</td>
-                <td>{item.fam}</td>
-                <td>{item.tel}</td>
-                <td>
-                  <button
-                    style={{
-                      width: "80%",
-                      background: "green",
-                      border: "none",
-                    }}
-                    onClick={() => tahrir(item, i)}
-                  >
-                    edit
-                  </button>
-                </td>
-                <td>
-                  <button
-                    style={{ width: "80%", background: "red", border: "none" }}
-                    onClick={() => ochir(item)}
-                  >
-                    delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
+      <div className={page ? "form_group" : "form_group active "}>
+        <form
+          style={{ display: "flex", flexDirection: "column", width: "300px" }}
+          onSubmit={dataSend}
+        >
+          <input
+            type="text"
+            name="ism"
+            value={inputData.ism}
+            onInput={changeFunc}
+            placeholder="ism kiriting"
+          />
+          <input
+            type="text"
+            name="fam"
+            placeholder="familya kiriting"
+            value={inputData.fam}
+            onInput={changeFunc}
+          />
+          <input
+            type="text"
+            name="tel"
+            value={inputData.tel}
+            onInput={changeFunc}
+            placeholder="tel"
+          />
+          <div className="btn-group">
+            <button className="send"> jonat </button>
+            <button type="button" className="cancel" onClick={() => setPage(!page)}>
+              cancel
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="table_page">
+        <div style={{textAlign:'right'}} >
+          <button className="add" onClick={handleFunc} > malumot qo'shish </button>
+        </div>
+        <table
+          border={1}
+          style={{
+            width: "500px",
+            borderCollapse: "collapse",
+            margin: "10px 0",
+          }}
+        >
+          <thead>
             <tr>
-              <th colSpan={10}>malumot yo'q...</th>
+              <th>№</th>
+              <th>ism</th>
+              <th>fam</th>
+              <th>tel</th>
+              <th colSpan={2}>action</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {localData.length > 0 ? (
+              localData.map((item, i) => (
+                <tr key={i}>
+                  <th>{i + 1}</th>
+                  <td>{item.ism}</td>
+                  <td>{item.fam}</td>
+                  <td>{item.tel}</td>
+                  <td>
+                    <button
+                      style={{
+                        background: "green",
+                      }}
+                      onClick={() => tahrir(item, i)}
+                    >
+                      edit
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      style={{ background: "red" }}
+                      onClick={() => ochir(item)}
+                    >
+                      delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <th colSpan={10}>malumot yo'q...</th>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
