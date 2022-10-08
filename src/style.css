@@ -28,7 +28,7 @@ button:active {
 table {
   border: 1px silver solid;
 }
-.form_group {
+.modal_body {
   width: 100%;
   height: 100vh;
   top: -100%;
@@ -41,10 +41,10 @@ table {
   background: rgba(0, 0, 0, 0.511);
 }
 
-.form_group.active{
-    top: 0;
+.modal_body.active {
+  top: 0;
 }
-.form_group form {
+.modal_body form {
   padding: 10px;
   background-color: white;
 }
@@ -62,7 +62,19 @@ input {
 .cancel {
   background-color: red;
 }
-.add{
-    background-color: green;
+.add {
+  background-color: green;
+}
+.moda_btn {
+  padding: 10px;
+  background-color: white;
 }
 
+.alert_body {
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.401);
+  position: fixed;
+  top: -100%;
+}
+.alert_body.active {
+    top: 0;
+}

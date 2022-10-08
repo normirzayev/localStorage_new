@@ -5,16 +5,19 @@ function App() {
   const [localData, setLocalData] = useState(
     JSON.parse(localStorage.getItem("data")) || []
   );
-  let [page, setPage] = useState(true)
+  let [page, setPage] = useState(true);
+  let [del, setDel] = useState(true);
+
+  let [delValue, setDelValue] = useState(false);
 
   let handleFunc = () => {
-    setPage(!page)
+    setPage(!page);
     setInputData({
       ism: "",
       fam: "",
       tel: "",
     });
-  }
+  };
   const [qiymat, setQiymat] = useState("");
 
   const [inputData, setInputData] = useState({
@@ -38,7 +41,7 @@ function App() {
       fam: elem.fam,
       tel: elem.tel,
     });
-    setPage(!page)
+    setPage(!page);
   };
 
   // malumot ochirish
@@ -59,12 +62,17 @@ function App() {
           "data",
           JSON.stringify([
             ...JSON.parse(localStorage.getItem("data")),
-            {...inputData, id:new Date().getTime().toString()},
+            { ...inputData, id: new Date().getTime().toString() },
           ])
         );
         setLocalData(JSON.parse(localStorage.getItem("data")));
       } else {
-        localStorage.setItem("data", JSON.stringify([{...inputData, id:new Date().getTime().toString()}]));
+        localStorage.setItem(
+          "data",
+          JSON.stringify([
+            { ...inputData, id: new Date().getTime().toString() },
+          ])
+        );
         setLocalData(JSON.parse(localStorage.getItem("data")));
       }
       setInputData({
@@ -72,15 +80,14 @@ function App() {
         fam: "",
         tel: "",
       });
-      handleFunc()
+      handleFunc();
     } else {
-      console.log("tahrirlandi");
       setQiymat("");
       localStorage.setItem(
         "data",
         JSON.stringify([
           ...localData.slice(0, qiymat),
-          {...inputData, id:new Date().getTime().toString()},
+          { ...inputData, id: new Date().getTime().toString() },
           ...localData.slice(qiymat + 1, localData.length),
         ])
       );
@@ -90,17 +97,20 @@ function App() {
         fam: "",
         tel: "",
       });
-      handleFunc()
+      handleFunc();
     }
   };
 
-
   return (
     <div className="App">
-      <div className={page ? "form_group" : "form_group active "}>
+      <div
+        className={page ? "modal_body" : "modal_body active "}
+        onClick={() => setPage(!page)}
+      >
         <form
           style={{ display: "flex", flexDirection: "column", width: "300px" }}
           onSubmit={dataSend}
+          onClick={(e) => e.stopPropagation()}
         >
           <input
             type="text"
@@ -125,15 +135,32 @@ function App() {
           />
           <div className="btn-group">
             <button className="send"> jonat </button>
-            <button type="button" className="cancel" onClick={() => setPage(!page)}>
+            <button
+              type="button"
+              className="cancel"
+              onClick={() => setPage(!page)}
+            >
               cancel
             </button>
           </div>
         </form>
       </div>
+
+      {/* modal_delete */}
+      {/* <div className={del ? "alert_body" : "alert_body active "}>
+        <div className="btn-group moda_btn ">
+          <button className="send">Yes</button>
+          <button type="button" className="cancel">
+            No
+          </button>
+        </div>
+      </div> */}
+
       <div className="table_page">
-        <div style={{textAlign:'right'}} >
-          <button className="add" onClick={handleFunc} > malumot qo'shish </button>
+        <div style={{ textAlign: "right" }}>
+          <button className="add" onClick={handleFunc}>
+            malumot qo'shish
+          </button>
         </div>
         <table
           border={1}
